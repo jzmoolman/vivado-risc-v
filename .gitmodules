@@ -19,3 +19,11 @@
 [submodule "opensbi"]
 	path = opensbi
 	url = https://github.com/riscv/opensbi.git
+[submodule "generators/riscv-boom"]
+	path = generators/riscv-boom
+	url = https://github.com/jzmoolman/riscv-boom.git
+	branch = vivado
+[submodule "rocket-chip"]
+	path = rocket-chip
+	url = https://github.com/jzmoolman/rocket-chip
+	branch = vivado
