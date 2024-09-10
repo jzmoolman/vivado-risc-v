@@ -8,7 +8,8 @@ lazy val commonSettings = Seq(
   scalacOptions ++= Seq("-deprecation","-unchecked"),
   addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
   libraryDependencies ++= Seq("edu.berkeley.cs" %% "chisel3" % chiselVersion),
-  libraryDependencies ++= Seq("org.json4s" %% "json4s-jackson" % "4.0.5"))
+  libraryDependencies ++= Seq("org.json4s" %% "json4s-jackson" % "4.0.5"),
+  trapExit:=false)
 
 lazy val vivado = (project in file("."))
   .dependsOn(cde)
