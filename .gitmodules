@@ -27,6 +27,3 @@
 	path = rocket-chip
 	url = https://github.com/jzmoolman/rocket-chip
 	branch = vivado
-[submodule "vivado_workspace"]
-	path = vivado_workspace
-	url = https://github.com/jzmoolman/vivado_workspace

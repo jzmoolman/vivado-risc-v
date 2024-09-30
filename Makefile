@@ -168,12 +168,11 @@ workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspa
 vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl
 
 github: workspace/$(CONFIG)/system-$(BOARD).tcl
-	rm -rf ../vivado_workspace/$(CONFIG)
-	cp -r workspace/$(CONFIG) ../vivivado_workspace/
-	cd ../vivado_workspace/
-	git add  .
-	git commit --amend -m "vivado-workspace"
-	git push -f
+	rm -rf ../vivado-workspace/$(CONFIG)
+	cp -r workspace/$(CONFIG) ../vivado-workspace/
+	git -C ../vivado-workspace add  .
+	git -C ../vivado-workspace commit --amend -m "vivado-workspace"
+	git -C ../vivado-workspace push -f
 
 all:
 	$(info "useage: make update-submodules"
