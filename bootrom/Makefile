@@ -1,8 +1,9 @@
+CROSS_COMPILE=riscv64-unknown-elf-
 CC=$(CROSS_COMPILE)gcc
 OBJCOPY=$(CROSS_COMPILE)objcopy
 OBJDUMP=$(CROSS_COMPILE)objdump
 
-CFLAGS = -march=rv64im -mabi=lp64
+CFLAGS = -march=rv64gc -mabi=lp64
 
 CCFLAGS = $(CFLAGS)
 CCFLAGS += -mcmodel=medany -Os -ffunction-sections -Wall
@@ -13,8 +14,9 @@ LFLAGS = -static -nostartfiles -T bootrom.lds -Wl,--gc-sections
 dts := system.dts
 dtb := system.dtb
 
-$(dtb): $(dts)
-	dtc -I dts -O dtb -o $@ $<
+#$(dtb): $(dts)
+#	dtc -I dts -O dtb -o $@ $<
+
 
 all: bootrom.img bootrom.elf
 

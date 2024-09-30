@@ -2,6 +2,8 @@ BOARD ?= genesys2
 CONFIG ?= rocket64b2
 include board/$(BOARD)/MakeFile.inc
 
+#Director used to create bootrom.img
+BOOTROM=bootrom_debug
 
 $(info Running Script)
 
@@ -86,20 +88,20 @@ workspace/$(CONFIG)/system.dts: $(CHISEL_SRC) rocket-chip/bootrom/bootrom.img wo
 	rm -rf workspace/$(CONFIG)/tmp
 
 # Generate board specific device tree, boot ROM and FIRRTL
-workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir: workspace/$(CONFIG)/system.dts $(wildcard bootrom/*) 
+workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir: workspace/$(CONFIG)/system.dts $(wildcard $(BOOTROM)/*)
 	rm -rf workspace/$(CONFIG)/system-$(BOARD)
 	mkdir -p workspace/$(CONFIG)/system-$(BOARD)
-	cat workspace/$(CONFIG)/system.dts board/$(BOARD)/bootrom.dts >bootrom/system.dts
-	sed -i='' "s#reg = <0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE32)>#g" bootrom/system.dts
-	sed -i='' "s#reg = <0x0 0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE64)>#g" bootrom/system.dts
-	sed -i='' "s#clock-frequency = <[0-9]*>#clock-frequency = <$(ROCKET_CLOCK_FREQ)>#g" bootrom/system.dts
-	sed -i='' "s#timebase-frequency = <[0-9]*>#timebase-frequency = <$(ROCKET_TIMEBASE_FREQ)>#g" bootrom/system.dts
-	if [ ! -z "$(ETHER_MAC)" ] ; then sed -i "s#local-mac-address = \[.*\]#local-mac-address = [$(ETHER_MAC)]#g" bootrom/system.dts ; fi
-	if [ ! -z "$(ETHER_PHY)" ] ; then sed -i "s#phy-mode = \".*\"#phy-mode = \"$(ETHER_PHY)\"#g" bootrom/system.dts ; fi
-	sed -i=''  "/interrupts-extended = <&.* 65535>;/d" bootrom/system.dts
-	make -C bootrom CROSS_COMPILE="$(CROSS_COMPILE_NO_OS_TOOLS)" CFLAGS="$(CROSS_COMPILE_NO_OS_FLAGS)" BOARD=$(BOARD) clean bootrom.img
-	mv bootrom/system.dts workspace/$(CONFIG)/system-$(BOARD).dts
-	mv bootrom/bootrom.img workspace/bootrom.img
+	cat workspace/$(CONFIG)/system.dts board/$(BOARD)/bootrom.dts >$(BOOTROM)/system.dts
+	sed -i='' "s#reg = <0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE32)>#g" $(BOOTROM)/system.dts
+	sed -i='' "s#reg = <0x0 0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE64)>#g" $(BOOTROM)/system.dts
+	sed -i='' "s#clock-frequency = <[0-9]*>#clock-frequency = <$(ROCKET_CLOCK_FREQ)>#g" $(BOOTROM)/system.dts
+	sed -i='' "s#timebase-frequency = <[0-9]*>#timebase-frequency = <$(ROCKET_TIMEBASE_FREQ)>#g" $(BOOTROM)/system.dts
+	if [ ! -z "$(ETHER_MAC)" ] ; then sed -i "s#local-mac-address = \[.*\]#local-mac-address = [$(ETHER_MAC)]#g" $(BOOTROM)/system.dts ; fi
+	if [ ! -z "$(ETHER_PHY)" ] ; then sed -i "s#phy-mode = \".*\"#phy-mode = \"$(ETHER_PHY)\"#g" $(BOOTROM)/system.dts ; fi
+	sed -i=''  "/interrupts-extended = <&.* 65535>;/d" $(BOOTROM)/system.dts
+	make -C $(BOOTROM) CROSS_COMPILE="$(CROSS_COMPILE_NO_OS_TOOLS)" CFLAGS="$(CROSS_COMPILE_NO_OS_FLAGS)" BOARD=$(BOARD) clean bootrom.img
+	mv $(BOOTROM)/system.dts workspace/$(CONFIG)/system-$(BOARD).dts
+	mv $(BOOTROM)/bootrom.img workspace/bootrom.img
 	$(SBT) "runMain freechips.rocketchip.diplomacy.Main --dir `realpath workspace/$(CONFIG)/system-$(BOARD)` --top Vivado.RocketSystem --config Vivado.$(CONFIG_SCALA)"
 	$(SBT) assembly
 	rm workspace/bootrom.img
@@ -165,7 +167,13 @@ workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspa
 
 vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl
 
-
+github: workspace/$(CONFIG)/system-$(BOARD).tcl
+	rm -rf ../vivado_workspace/$(CONFIG)
+	cp -r workspace/$(CONFIG) ../vivivado_workspace/
+	cd ../vivado_workspace/
+	git add  .
+	git commit --amend -m "vivado-workspace"
+	git push -f
 
 all:
 	$(info "useage: make update-submodules"

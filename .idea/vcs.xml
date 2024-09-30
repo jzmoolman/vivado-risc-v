@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/520N_MX/fpga_10g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ADM_PCIE_9V3/fpga_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ATLYS/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/Alveo/fpga_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/Arty/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/C10LP/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/DCS7132LB/fpga_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/DE2-115/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/DE5-Net/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ExaNIC_X10/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ExaNIC_X25/fpga_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/HTG640/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/HTG640/fpga_cxpt16/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/HTG9200/fpga_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/HTG9200/fpga_fmc_htg_6qsfp_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/KC705/fpga_gmii/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/KC705/fpga_rgmii/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/KC705/fpga_sgmii/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ML605/fpga_gmii/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ML605/fpga_rgmii/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ML605/fpga_sgmii/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/NetFPGA_SUME/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/NexysVideo/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/RV901T/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/S10DX_DK/fpga_10g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/S10MX_DK/fpga_10g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/VCU108/fpga_10g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/VCU108/fpga_1g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/VCU118/fpga_1g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/VCU118/fpga_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/VCU118/fpga_fmc_htg_6qsfp_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ZCU102/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/ZCU106/fpga/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ethernet/verilog-ethernet/example/fb2CG/fpga_25g/lib/eth" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generators/gemmini" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generators/gemmini/software/libgemmini" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generators/riscv-boom" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generators/sifive-cache" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generators/testchipip" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/opensbi" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rocket-chip" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rocket-chip/cde" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rocket-chip/hardfloat" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rocket-chip/hardfloat/berkeley-softfloat-3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rocket-chip/hardfloat/berkeley-testfloat-3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rocket-chip/torture" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/rocket-chip/torture/env" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/u-boot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/vivado_workspace" vcs="Git" />
+  </component>
+</project>
