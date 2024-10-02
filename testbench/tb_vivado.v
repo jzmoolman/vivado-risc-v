@@ -22,20 +22,23 @@
 
 module tb_rocketchip();
     reg clk;
-    reg clk_ok;
+    reg mem_ok;
+    reg reset;
     wire out;
     
     
     localparam CLK_PERIOD = 10;
     
     initial clk = 1'b0;
-    initial clk_ok = 1'b1;
+    initial mem_ok = 1'b1;
+    initial reset = 1'b0;
     always # ( CLK_PERIOD/2.0)
        clk =~clk;
        
-   Rocket64x1 dut (
+   design_1_wrapper dut (
        .clock(clk),
-       .clock_ok(clk_ok)
+       .mem_ok(mem_ok),
+       .reset(reset)
    );
        
 
