@@ -24,11 +24,19 @@ add_files -norecurse -fileset $source_fileset $files
 
 # Note: top.xdc must be first - other files depend on clocks defined in top.xdc
 set files [list \
- [file normalize ../../board/${vivado_board_name}/top.xdc] \
-# [file normalize ../../board/timing-constraints.tcl] 
+ [file normalize ../../board/${vivado_board_name}/top.xdc] 
 ]
 
 add_files -norecurse -fileset $constraint_fileset $files
+
+source ../../testbench/tb_blockdesign.tcl
+
+make_wrapper -files [get_files /home/jzmoolman/src/_-github/vivado-risc-v/workspace/rocket64x1/tb-vivado-genesys2-riscv/tb-genesys2-riscv.srcs/sources_1/bd/design_1/design_1.bd] -top
+import_files -force -norecurse /home/jzmoolman/src/_-github/vivado-risc-v/workspace/rocket64x1/tb-vivado-genesys2-riscv/tb-genesys2-riscv.gen/sources_1/bd/design_1/hdl/design_1_wrapper.v
+update_compile_order -fileset sources_1
+
+set_property top tb_rocketchip [get_filesets sim_1]
+set_property top_lib xil_defaultlib [get_filesets sim_1]
 
 
 

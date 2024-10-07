@@ -18,4 +18,5 @@
 /.sbt/
 /.Xilinx/
 /.idea
-
+**/*.log
+**/_-ts/

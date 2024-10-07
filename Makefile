@@ -104,7 +104,7 @@ workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir: workspace/$(CONFIG)/system
 	mv $(BOOTROM)/bootrom.img workspace/bootrom.img
 	$(SBT) "runMain freechips.rocketchip.diplomacy.Main --dir `realpath workspace/$(CONFIG)/system-$(BOARD)` --top Vivado.RocketSystem --config Vivado.$(CONFIG_SCALA)"
 	$(SBT) assembly
-	rm workspace/bootrom.img
+	#rm workspace/bootrom.img
 
 # Generate Rocket SoC HDL
 workspace/$(CONFIG)/system-$(BOARD).v: workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir
@@ -163,6 +163,7 @@ workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspa
 	echo "set memory_size $(MEMORY_SIZE)" >>$@
 	echo 'cd [file dirname [file normalize [info script]]]' >>$@
 	echo 'source ../../vivado.tcl' >>$@
+	echo 'source ../../testbench/$(BOARD)/tb-vivado.tcl' >>tb_$@
 
 
 vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl
