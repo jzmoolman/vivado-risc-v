@@ -163,7 +163,7 @@ workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspa
 	echo "set memory_size $(MEMORY_SIZE)" >>$@
 	echo 'cd [file dirname [file normalize [info script]]]' >>$@
 	echo 'source ../../vivado.tcl' >>$@
-	echo 'source ../../testbench/$(BOARD)/tb-vivado.tcl' >>tb_$@
+	echo 'source ../../testbench/$(BOARD)/tb-vivado.tcl' >>workspace/${CONFIG}/tb-${BOARD}.tcl
 
 
 vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl

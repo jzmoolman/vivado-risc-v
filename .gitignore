@@ -18,5 +18,7 @@
 /.sbt/
 /.Xilinx/
 /.idea
+**/.DS_Store
 **/*.log
 **/_-ts/
+
