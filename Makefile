@@ -163,7 +163,15 @@ workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspa
 	echo "set memory_size $(MEMORY_SIZE)" >>$@
 	echo 'cd [file dirname [file normalize [info script]]]' >>$@
 	echo 'source ../../vivado.tcl' >>$@
-	echo 'source ../../testbench/$(BOARD)/tb-vivado.tcl' >>workspace/${CONFIG}/tb-${BOARD}.tcl
+	echo "set vivado_board_name $(BOARD)" >workspace/${CONFIG}/tb-${BOARD}.tcl
+	if [ "$(BOARD_PART)" != "" -a "$(BOARD_PART)" != "NONE" ] ; then echo "set vivado_board_part $(BOARD_PART)" >>workspace/${CONFIG}/tb-${BOARD}.tcl ; fi
+	if [ "$(BOARD_CONFIG)" != "" ] ; then echo "set board_config $(BOARD_CONFIG)" >>workspace/${CONFIG}/tb-${BOARD}.tcl ; fi 
+	echo "set xilinx_part $(XILINX_PART)" >>workspace/${CONFIG}/tb-${BOARD}.tcl
+	echo "set rocket_module_name $(CONFIG_SCALA)" >>workspace/${CONFIG}/tb-${BOARD}.tcl
+	echo "set riscv_clock_frequency $(ROCKET_FREQ_MHZ)" >>workspace/${CONFIG}/tb-${BOARD}.tcl
+	echo "set memory_size $(MEMORY_SIZE)" >>workspace/${CONFIG}/tb-${BOARD}.tcl
+	echo 'cd [file dirname [file normalize [info script]]]' >>workspace/${CONFIG}/tb-${BOARD}.tcl
+	echo 'source ../../testbench/tb-vivado.tcl' >>workspace/${CONFIG}/tb-${BOARD}.tcl
 
 
 vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl

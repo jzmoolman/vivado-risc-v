@@ -10,12 +10,21 @@
 .section .text.start, "ax", @progbits
 .globl _start
 _start:
-     li t0, 0x01
-     sd to, 0(0x0800000000)
+     j _hang
 
 
 .section .text.hang, "ax", @progbits
 .globl _hang
 _hang:
-         wfi                   # should get to this point
+    li t0, 0x00FFFFFFFFFFFFFF > 4;
+    csrw pmpaddr0, t0
+    wfi
+
+_hang_TEST:
+      la s0, _ram
+      ld t0, 0x0f0(s0)
+      li t0, 0xdeadbeaf
+      sd t0, 0x0ff(s0)
+      wfi                   # should get to this point
+
 
