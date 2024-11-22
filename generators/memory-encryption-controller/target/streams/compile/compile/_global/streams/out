@@ -1,0 +1,13 @@
+[0m[[0m[31merror[0m] [0m[0m/Users/zach/src/vivado-risc-v/generators/memory-encryption-controller/design/craft/mec/src/Configs.scala:5:8: object MemoryEncryptionController is not a member of package jzm.mec[0m
+[0m[[0m[31merror[0m] [0m[0mimport jzm.mec.{BankedMecKey, MemoryEncryptionController, MemoryEncryptionControllerParameters}[0m
+[0m[[0m[31merror[0m] [0m[0m       ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/zach/src/vivado-risc-v/generators/memory-encryption-controller/design/craft/mec/src/Configs.scala:34:20: unknown parameter name: blockBytes[0m
+[0m[[0m[31merror[0m] [0m[0m        blockBytes = sbus.blockBytes,[0m
+[0m[[0m[31merror[0m] [0m[0m                   ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/zach/src/vivado-risc-v/generators/memory-encryption-controller/design/craft/mec/src/Configs.scala:35:19: unknown parameter name: beatBytes[0m
+[0m[[0m[31merror[0m] [0m[0m        beatBytes = sbus.beatBytes,[0m
+[0m[[0m[31merror[0m] [0m[0m                  ^[0m
+[0m[[0m[31merror[0m] [0m[0m/Users/zach/src/vivado-risc-v/generators/memory-encryption-controller/design/craft/mec/src/Configs.scala:32:43: too many arguments (found 3, expected 1) for method apply: (ee: Boolean): freechips.rocketchip.subsystem.MemoryEncryptionControllerParameters in object MemoryEncryptionControllerParameters[0m
+[0m[[0m[31merror[0m] [0m[0m      MemoryEncryptionControllerParameters([0m
+[0m[[0m[31merror[0m] [0m[0m                                          ^[0m
+[0m[[0m[31merror[0m] [0m[0mfour errors found[0m

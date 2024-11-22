@@ -1,9 +1,9 @@
-global def mecRoot = simplify "{here}/../.."
+global def memoryEncryptionControllerRoot = simplify "{here}/../.."
 
-global def mecScalaModule =
-  def name = "mec"
+global def memoryEncryptionControllerScalaModule =
+  def name = "memoryEncryptionController"
   def scalaVersion = rocketchipScalaModule.getScalaModuleScalaVersion
-  def dir = "{blockInclusiveCacheSifiveRoot}/design/craft/inclusivecache"
+  def dir = "{memoryEncryptionControllerRoot}/design/craft/mec"
   makeScalaModule name dir scalaVersion
   | setScalaModuleSourceDirs ("src", Nil)
   | setScalaModuleResourceDirs ("resources", Nil)
