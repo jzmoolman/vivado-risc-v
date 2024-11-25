@@ -1,4 +1,5 @@
-//package freechips.rocketchip.subsystem
+package freechips.rocketchip.subsystem
+
 //
 //import freechips.rocketchip.diplomacy.LazyModule
 //import freechips.rocketchip.tile.XLen

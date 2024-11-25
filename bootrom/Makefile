@@ -14,8 +14,8 @@ LFLAGS = -static -nostartfiles -T bootrom.lds -Wl,--gc-sections
 dts := system.dts
 dtb := system.dtb
 
-#$(dtb): $(dts)
-#	dtc -I dts -O dtb -o $@ $<
+$(dtb): $(dts)
+	dtc -I dts -O dtb -o $@ $<
 
 
 all: bootrom.img bootrom.elf

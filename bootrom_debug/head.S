@@ -16,15 +16,14 @@ _start:
 .section .text.hang, "ax", @progbits
 .globl _hang
 _hang:
+      li s0, BOOTROM_MEM_ADDR
+      li t0, 0xdeadbeaf
+      add s0, s0, t0
+      ld t1, 0x00(s0)
+      sd t0, 0xff(s0)
+      wfi                   # should get to this point
+
+_hang_:
     li t0, 0x00FFFFFFFFFFFFFF > 4;
     csrw pmpaddr0, t0
     wfi
-
-_hang_TEST:
-      la s0, _ram
-      ld t0, 0x0f0(s0)
-      li t0, 0xdeadbeaf
-      sd t0, 0x0ff(s0)
-      wfi                   # should get to this point
-
-

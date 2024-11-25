@@ -3,7 +3,8 @@ CONFIG ?= rocket64b2
 include board/$(BOARD)/MakeFile.inc
 
 #Director used to create bootrom.img
-BOOTROM=bootrom_debug
+# BOOTROM=bootrom_debug
+BOOTROM=bootrom
 
 $(info Running Script)
 
@@ -22,6 +23,9 @@ update-submodules:
 
 
 # --- generate HDL ---
+
+workspace/boot.elf:
+	touch boot.elf
 
 CONFIG_SCALA := $(subst rocket,Rocket,$(CONFIG))
 RISCV_TOOLS_PATH ?= /opt/homebrew/bin/
@@ -184,4 +188,4 @@ github: workspace/$(CONFIG)/system-$(BOARD).tcl
 	git -C ../vivado-workspace push -f
 
 all:
-	$(info "useage: make update-submodules"
+	$(info "usage: make update-submodules"
