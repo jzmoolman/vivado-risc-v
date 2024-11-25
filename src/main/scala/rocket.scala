@@ -1,6 +1,7 @@
 package Vivado
 
 import Chisel._
+import devices.tilelink.{PUF, PUFLocated}
 import org.chipsalliance.cde.config.{Config, Parameters}
 import freechips.rocketchip.devices.debug.DebugModuleKey
 import freechips.rocketchip.diplomacy._
@@ -17,6 +18,7 @@ class RocketSystem(implicit p: Parameters) extends RocketSubsystem
     with CanHaveSlaveAXI4Port
 {
   val bootROM  = p(BootROMLocated(location)).map { BootROM.attach(_, this, CBUS) }
+  val puf  = p(PUFLocated(location)).map { PUF.attach(_, this, CBUS) }
   override lazy val module = new RocketSystemModuleImp(this)
 }
 
@@ -328,7 +330,7 @@ class Rocket64w1 extends Config(
   new RocketBaseConfig)
 
 class Rocket64x1 extends Config(
-  new WithInclusiveCache  ++
+//  new WithInclusiveCache  ++
   new WithNBreakpoints(8) ++
   new boom.common.WithNMediumBooms(1) ++
   new RocketWideBusConfig)
