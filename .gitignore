@@ -9,7 +9,7 @@
 /project/target/
 /project/project/target/
 /generators/targetutils/target/
-/generators/memory-encryption-controller/target/
+/generators/memory-encryption-controller/target
 /bare-metal/hello-world/boot.elf
 /.bash_history
 /.cache/

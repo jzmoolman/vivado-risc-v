@@ -3,8 +3,8 @@ CONFIG ?= rocket64b2
 include board/$(BOARD)/MakeFile.inc
 
 #Director used to create bootrom.img
-# BOOTROM=bootrom_debug
-BOOTROM=bootrom
+BOOTROM=bootrom_debug
+#BOOTROM=bootrom
 
 $(info Running Script)
 
@@ -86,7 +86,7 @@ workspace/patch-hdl-done:
 workspace/$(CONFIG)/system.dts: $(CHISEL_SRC) rocket-chip/bootrom/bootrom.img workspace/patch-hdl-done
 	rm -rf workspace/$(CONFIG)/tmp
 	mkdir -p workspace/$(CONFIG)/tmp
-	cp rocket-chip/bootrom/bootrom.img workspace/bootrom.img
+	cp rocket-chip/bootrom/bootrom.img workspace/bootrom2.img
 	$(SBT) "runMain freechips.rocketchip.diplomacy.Main --dir `realpath workspace/$(CONFIG)/tmp` --top Vivado.RocketSystem --config Vivado.$(CONFIG_SCALA)"
 	mv workspace/$(CONFIG)/tmp/Vivado.$(CONFIG_SCALA).dts workspace/$(CONFIG)/system.dts
 	rm -rf workspace/$(CONFIG)/tmp

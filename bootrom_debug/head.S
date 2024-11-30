@@ -16,11 +16,15 @@ _start:
 .section .text.hang, "ax", @progbits
 .globl _hang
 _hang:
-      li s0, BOOTROM_MEM_ADDR
-      li t0, 0xdeadbeaf
-      add s0, s0, t0
-      ld t1, 0x00(s0)
-      sd t0, 0xff(s0)
+     li s0, 0x2010000
+     li s1, BOOTROM_MEM_ADDR
+
+     ld t0, 0x00(s0)
+     sd t0, 0x00(s1)
+
+     ld t0, 0x00(s0)
+     sd t0, 0x00(s1)
+
       wfi                   # should get to this point
 
 _hang_:

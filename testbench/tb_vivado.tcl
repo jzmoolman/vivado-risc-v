@@ -30,9 +30,8 @@ set files [list \
 add_files -norecurse -fileset $constraint_fileset $files
 
 source ../../testbench/tb_blockdesign.tcl
-
-make_wrapper -files [get_files /home/jzmoolman/src/_-github/vivado-risc-v/workspace/rocket64x1/tb-vivado-genesys2-riscv/tb-genesys2-riscv.srcs/sources_1/bd/design_1/design_1.bd] -top
-import_files -force -norecurse /home/jzmoolman/src/_-github/vivado-risc-v/workspace/rocket64x1/tb-vivado-genesys2-riscv/tb-genesys2-riscv.gen/sources_1/bd/design_1/hdl/design_1_wrapper.v
+make_wrapper -files [get_files ./tb-vivado-genesys2-riscv/tb-genesys2-riscv.srcs/sources_1/bd/design_1/design_1.bd] -top
+import_files -force -norecurse ./tb-vivado-genesys2-riscv/tb-genesys2-riscv.gen/sources_1/bd/design_1/hdl/design_1_wrapper.v
 update_compile_order -fileset sources_1
 
 set_property top tb_rocketchip [get_filesets sim_1]
