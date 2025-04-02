@@ -23,7 +23,7 @@
 [submodule "rocket-chip"]
 	path = rocket-chip
 	url = https://github.com/jzmoolman/rocket-chip
-	branch = vivado
+	branch = fork
 [submodule "generators/sifive-cache"]
 	path = generators/sifive-cache
 	url = git@github.com:jzmoolman/rocket-chip-inclusive-cache.git

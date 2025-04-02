@@ -21,6 +21,13 @@ vc707         Rocket.*          100.0
 (vcu1525|u200|u250)          Rocket.*m2            100.0
 (vcu1525|u200|u250)          Rocket.*              125.0
 
+(zcu102|xczu9eg-ffvb1156-2-e)  Rocket.*gem.*         31.25
+(zcu102|xczu9eg-ffvb1156-2-e)  Rocket64x1            50.0
+(zcu102|xczu9eg-ffvb1156-2-e)  Rocket64[xyz].*       31.25
+(zcu102|xczu9eg-ffvb1156-2-e)  Rocket.*l2w?          62.5
+(zcu102|xczu9eg-ffvb1156-2-e)  Rocket.*b[4-9].*      80.0
+(zcu102|xczu9eg-ffvb1156-2-e)  Rocket.*              100.0
+
 .*            Rocket.*gem.*     20.0
 .*            Rocket64[xyz].*   20.0
 .*            Rocket.*l2w?      31.25

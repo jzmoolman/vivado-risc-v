@@ -1,3 +1,4 @@
+**/.DS_Store
 /bootrom/bootrom.elf
 /bootrom/bootrom.img
 /bootrom/system.dtb
@@ -5,11 +6,7 @@
 /vhdl-wrapper/bin/
 /debian-riscv64/
 /workspace/
-/target/
-/project/target/
-/project/project/target/
-/generators/targetutils/target/
-/generators/memory-encryption-controller/target
+**/target/
 /bare-metal/hello-world/boot.elf
 /.bash_history
 /.cache/
@@ -19,7 +16,6 @@
 /.sbt/
 /.Xilinx/
 /.idea
-**/.DS_Store
 **/*.log
 **/_-ts/
 

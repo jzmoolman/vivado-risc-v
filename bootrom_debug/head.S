@@ -17,13 +17,13 @@ _start:
 .globl _hang
 _hang:
      li s0, 0x2010000
-     li s1, BOOTROM_MEM_ADDR
+     li s1, 0x20000
+     li s2, BOOTROM_MEM_ADDR
 
      ld t0, 0x00(s0)
-     sd t0, 0x00(s1)
-
-     ld t0, 0x00(s0)
-     sd t0, 0x00(s1)
+     ld t1, 0x00(s1)
+     sd t0, 0x00(s2)
+     sd t1, 0x00(s2)
 
       wfi                   # should get to this point
 
