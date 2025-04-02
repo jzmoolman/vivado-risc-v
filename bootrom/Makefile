@@ -1,13 +1,15 @@
-CROSS_COMPILE=riscv64-unknown-elf-
 CC=$(CROSS_COMPILE)gcc
 OBJCOPY=$(CROSS_COMPILE)objcopy
 OBJDUMP=$(CROSS_COMPILE)objdump
 
-CFLAGS = -march=rv64gc -mabi=lp64
+CFLAGS = -march=rv64im -mabi=lp64
+$(info "BOOTROM makefile")
+$(info "CFLAGS=$(CFLAGS)")
 
 CCFLAGS = $(CFLAGS)
 CCFLAGS += -mcmodel=medany -Os -ffunction-sections -Wall
 CCFLAGS += -fno-pic -fno-common -g -I.
+CCFLAGS += -nostdlib
 
 LFLAGS = -static -nostartfiles -T bootrom.lds -Wl,--gc-sections
 
@@ -31,8 +33,8 @@ include ../board/$(BOARD)/bootrom.inc
 
 else
 
-%.elf: $(dtb) head.S kprintf.c bootrom.c ff.c ffunicode.c
-	$(CC) $(CCFLAGS) -DDEVICE_TREE='"$(dtb)"' $(LFLAGS) -o $@ head.S kprintf.c bootrom.c ff.c ffunicode.c
+%.elf: $(dtb) head.S kprintf.c bootrom.c ff.c ffunicode.c verify.c ge.c fe.c sha3.c sc.c
+	$(CC) $(CCFLAGS) -DDEVICE_TREE='"$(dtb)"' $(LFLAGS) -o $@ head.S kprintf.c bootrom.c ff.c ffunicode.c verify.c ge.c fe.c sha3.c sc.c
 
 endif
 

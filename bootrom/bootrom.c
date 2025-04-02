@@ -1,11 +1,16 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <ff.h>
-#include <diskio.h>
+#include "ff.h"
+#include "diskio.h"
 
 #include "common.h"
 #include "kprintf.h"
+
+#include "include/ed25519/ed25519.h"
+
+extern const unsigned char _fw_publickey[32];
+extern const unsigned char _fw_cert[64];
 
 /* Card type flags (card_type) */
 #define CT_MMC          0x01            /* MMC ver 3 */
@@ -61,7 +66,7 @@
 
 // Card detect bits
 #define SDC_CARD_INSERT_INT_EN  0x0001
-#define SDC_CARD_INSERT_INT_REQ 0x0002
+#define SDC_CARD_IfpNSERT_INT_REQ 0x0002
 #define SDC_CARD_REMOVE_INT_EN  0x0004
 #define SDC_CARD_REMOVE_INT_REQ 0x0008
 
@@ -130,6 +135,7 @@ static uint32_t response[4] __attribute__((section(".bss")));
 static FATFS fatfs __attribute__((section(".bss")));
 static int alt_mem __attribute__((section(".bss")));
 static FIL fd __attribute__((section(".bss")));
+static FIL fd2 __attribute__((section(".bss")));
 
 extern unsigned char _fbss[];
 extern unsigned char _ebss[];
@@ -409,13 +415,13 @@ DSTATUS disk_initialize(BYTE drv) {
     return drv_status;
 }
 
-static uintptr_t read_num(unsigned size) {
+static uintptr_t read_num(FIL* fd, unsigned size) {
     uint8_t buf[0x10];
     uintptr_t v = 0;
     unsigned n = 0;
     UINT rd;
     if (errno) return 0;
-    errno = f_read(&fd, buf, size, &rd);
+    errno = f_read(fd, buf, size, &rd);
     if (errno) return 0;
     if (rd < size) {
         errno = ERR_EOF;
@@ -427,11 +433,181 @@ static uintptr_t read_num(unsigned size) {
     return v;
 }
 
-#define read_uint16() (uint16_t)read_num(2)
-#define read_uint32() (uint32_t)read_num(4)
-#define read_addr() (uintptr_t)read_num(__riscv_xlen >> 3)
+#define read_uint16(a) (uint16_t)read_num(a,2)
+#define read_uint32(a) (uint32_t)read_num(a,4)
+#define read_addr(a) (uintptr_t)read_num(a,__riscv_xlen >> 3)
+
 
 #define PT_LOAD 1
+
+void u8toHexStr(char *buffer, int size) {
+  
+  
+  for ( int i = 0; i < size; i++) {
+      kprintf("%hx", buffer[i]);
+    if ((i+1) % 8 == 0 && i != 0) {
+      kprintf("\n");
+    }
+  }
+}
+
+static int verify(void) {
+    const char * fnm = "BOOT.ELF";
+    uint8_t buf[0x10];
+    uintptr_t entry_addr = 0;
+    uint64_t phoff = 0;
+    uint16_t phentsize = 0;
+    uint16_t phnum = 0;
+    unsigned i = 0;
+    int fw_valid = 0;
+
+    errno = f_open(&fd2, fnm, FA_READ);
+    if (errno) return -1;
+
+    UINT rd = 0;
+    errno = f_read(&fd2, buf, 6, &rd);
+    if (errno) return -1;
+    if (rd < 6) {
+        errno = ERR_EOF;
+        return -1;
+    }
+    if (buf[0] != 0x7f || buf[1] != 'E' || buf[2] != 'L' || buf[3] != 'F') {
+        errno = ERR_NOT_ELF;
+        return -1;
+    }
+    if (buf[4] != (__riscv_xlen == 32 ? 1 : 2)) {
+    
+        errno = ERR_ELF_BITS;
+        return -1;
+    }
+    if (buf[5] != 1) {
+        errno = ERR_ELF_ENDIANNESS;
+        return -1;
+    }
+    errno = f_lseek(&fd2, 24);
+    entry_addr = read_addr(&fd2);
+    phoff = read_addr(&fd2);
+    if (errno) return -1;
+    errno = f_lseek(&fd2, f_tell(&fd2) + (__riscv_xlen>>3) + 6);
+    
+    phentsize = read_uint16(&fd2);
+    phnum = read_uint16(&fd2);
+
+    if (errno) return -1;
+    
+    for (i = 0; i < phnum; i++) {
+        uint32_t p_type = 0;
+        uint64_t p_offset = 0;
+        uint64_t p_vaddr = 0;
+        uint64_t p_filesz = 0;
+        uint64_t p_memsz = 0;
+        uintptr_t addr = 0;
+        size_t pos = 0;
+        errno = f_lseek(&fd2, phoff + i * phentsize);
+        p_type = read_uint32(&fd2);
+        if (errno) return -1;
+        if (p_type != PT_LOAD) continue;
+        if ( i != 1)  continue;
+        
+        errno = f_lseek(&fd2, f_tell(&fd2) + (__riscv_xlen == 32 ? 0 : 4));
+        p_offset = read_addr(&fd2);
+        p_vaddr = read_addr(&fd2);
+        read_addr(&fd2); /* p_paddr */
+        p_filesz = read_addr(&fd2);
+        p_memsz = read_addr(&fd2);
+        if (errno) return -1;
+        errno = f_lseek(&fd2, p_offset);
+        if (errno) return -1;
+
+        p_vaddr = SCRATCHPAD_ADDR;
+        addr = p_vaddr;
+       
+        while (pos < p_filesz && pos < p_memsz) {
+            uint8_t * mem = (void *)addr;
+            size_t size = 0x10000;
+            if (size > p_filesz - pos) size = (size_t)(p_filesz - pos);
+            if (size > p_memsz - pos) size = (size_t)(p_memsz - pos);
+            
+            errno = f_read(&fd2, mem, size, &rd);
+//            for (int j = 0; j*8 < size; j++) {
+//              kprintf("mem %x ", mem+j*8);
+//              kprintf("-> %x\n", *(long unsigned*)(mem+8*j)); 
+//            }
+
+            if (errno) return -1;
+            if (rd == 0) {
+                errno = ERR_EOF;
+                return -1;
+            }
+            if (size >(size_t)rd) size = (size_t)rd;
+            addr += size;
+            pos += size;
+        }
+        while (pos < p_memsz) {
+            uint8_t * mem = (void *)addr;
+            size_t size = 0x10000;
+            if (size > p_memsz - pos) size = (size_t)p_memsz - pos;
+            //if (addr + size > BOOTROM_MEM_ADDR && addr < BOOTROM_MEM_END) {
+            //    mem = (uint8_t *)(addr - SCRATCHPAD_ADDR);
+            //    if (addr + size > BOOTROM_MEM_END) size = BOOTROM_MEM_END - addr;
+            //    alt_mem = 1;
+            //}
+            size_t s = size;
+            while (s) {
+                *mem++ = 0;
+                s--;
+            }
+            addr += size;
+            pos += size;
+        }
+
+        FIL fd_cert;
+        char *filename_cert = "cert_1";
+        char fw_signature[64];
+          
+        errno = f_open(&fd_cert, filename_cert, FA_READ);
+        if (errno) return -1;
+            UINT rd = 0;
+            errno = f_read(&fd_cert, fw_signature, 64, &rd);
+            if (errno) return -1;
+            if (rd < 64) {
+            errno = ERR_EOF;
+            return -1;
+            f_close(&fd_cert);
+       }
+
+//        char fw_signature[64] = {
+//           0xB7 ,0x0C ,0x01 ,0x5B ,0x23 ,0xB5 ,0x79 ,0x23,0x17, 
+//0x4A ,0x16 ,0x6B ,0xC4 ,0x91 ,0x7E ,0xAD ,0x62, 
+//0xF9 ,0xE1 ,0x61 ,0x8A ,0x7C ,0xE2 ,0xB4 ,0xC9, 
+//0x6A ,0x39 ,0xE5 ,0x7E ,0x82 ,0x09 ,0x47 ,0x16, 
+//0x2D ,0x8C ,0xC6 ,0x24 ,0x5D ,0x19 ,0xC8 ,0x70, 
+//0xA2 ,0xDD ,0xCD ,0x5A ,0xB8 ,0xF3 ,0x21 ,0xE9, 
+//0xD4 ,0x59 ,0x32 ,0x85 ,0x26 ,0x06 ,0x3E ,0x55, 
+//0x9E ,0x37 ,0x8D ,0xC7 ,0xAD ,0xCC ,0x0F 
+//
+//        };
+
+        kprintf("fw_public_key\n");
+        u8toHexStr(_fw_publickey, 32);
+        kprintf("\n");
+
+        kprintf("Certificate\n");
+        u8toHexStr(fw_signature, 64 );
+        kprintf("\n");
+
+        kprintf("p_vaddr %x ", p_vaddr);
+        kprintf("p_flesz %x ", p_filesz);
+        kprintf("p_memsz %x ", p_memsz);
+
+          
+        fw_valid = ed25519_verify(fw_signature, p_vaddr, p_filesz, _fw_publickey);
+        break; 
+      
+    }
+    f_close(&fd2);
+    return fw_valid;
+}
 
 static int download(void) {
     const char * fnm = "BOOT.ELF";
@@ -465,12 +641,12 @@ static int download(void) {
         return -1;
     }
     errno = f_lseek(&fd, 24);
-    entry_addr = read_addr();
-    phoff = read_addr();
+    entry_addr = read_addr(&fd);
+    phoff = read_addr(&fd);
     if (errno) return -1;
     errno = f_lseek(&fd, f_tell(&fd) + (__riscv_xlen>>3) + 6);
-    phentsize = read_uint16();
-    phnum = read_uint16();
+    phentsize = read_uint16(&fd);
+    phnum = read_uint16(&fd);
     if (errno) return -1;
     for (i = 0; i < phnum; i++) {
         uint32_t p_type = 0;
@@ -481,15 +657,15 @@ static int download(void) {
         uintptr_t addr = 0;
         size_t pos = 0;
         errno = f_lseek(&fd, phoff + i * phentsize);
-        p_type = read_uint32();
+        p_type = read_uint32(&fd);
         if (errno) return -1;
         if (p_type != PT_LOAD) continue;
         errno = f_lseek(&fd, f_tell(&fd) + (__riscv_xlen == 32 ? 0 : 4));
-        p_offset = read_addr();
-        p_vaddr = read_addr();
-        read_addr(); /* p_paddr */
-        p_filesz = read_addr();
-        p_memsz = read_addr();
+        p_offset = read_addr(&fd);
+        p_vaddr = read_addr(&fd);
+        read_addr(&fd); /* p_paddr */
+        p_filesz = read_addr(&fd);
+        p_memsz = read_addr(&fd);
         if (errno) return -1;
         errno = f_lseek(&fd, p_offset);
         if (errno) return -1;
@@ -578,15 +754,21 @@ static int download(void) {
     return 0;
 }
 
+
+
 int main(void) {
     uint64_t * bss = (uint64_t *)_fbss;
     while (bss < (uint64_t *)_ebss) *bss++ = 0;
-
     for (;;) {
         kputs("");
-        kprintf("RISC-V %d, Boot ROM V3.8\n", __riscv_xlen);
+        kprintf("RISC-V %d, Boot ROM V3.8 - ZZZ\n", __riscv_xlen);
         drv_status = STA_NOINIT;
         errno = f_mount(&fatfs, "", 1);
+        if (verify()) {
+           kprintf("Verify OK\n");
+        } else {
+           kprintf("Verify Bad\n");  
+        }
         if (errno) {
             kprintf("Cannot mount SD: %s\n", errno_to_str());
         }

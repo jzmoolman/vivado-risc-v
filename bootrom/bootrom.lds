@@ -18,8 +18,10 @@ SECTIONS {
     *(.text.start)
     . = 0x0040;
     *(.text.hang)
-    . = 0x0080;
-    *(.rodata.dtb)
+    . = 0x080; 
+    *(.text.fw_pulickey)
+    . = 0x00A0;
+    *(.rodata.dtb);
     *(.text.unlikely .text.unlikely.*)
     *(.text .text.* .gnu.linkonce.t.*)
     *(.rodata .rodata.* .gnu.linkonce.r.*)

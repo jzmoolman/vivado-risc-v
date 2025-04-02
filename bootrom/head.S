@@ -40,8 +40,48 @@ _hartx_loop:
   ecall
   j _hartx_loop
 
+.section .text.fw_pulickey, "a", @progbits
+.globl _fw_publickey
+_fw_publickey:
+
+    .byte 0x0f
+    .byte 0xaa 
+    .byte 0xd4 
+    .byte 0xff
+    .byte 0x01
+    .byte 0x17
+    .byte 0x85
+    .byte 0x83
+    .byte 0xba
+    .byte 0xa5
+    .byte 0x88 
+    .byte 0x96
+    .byte 0x6f
+    .byte 0x7c
+    .byte 0x1f
+    .byte 0xf3
+    .byte 0x25
+    .byte 0x64
+    .byte 0xdd
+    .byte 0x17
+    .byte 0xd7
+    .byte 0xdc
+    .byte 0x2b
+    .byte 0x46
+    .byte 0xcb
+    .byte 0x50
+    .byte 0xa8
+    .byte 0x4a
+    .byte 0x69
+    .byte 0x27
+    .byte 0x0b
+    .byte 0x4c
+
+
 .section .rodata.dtb, "a", @progbits
 .globl _dtb
 .align 5, 0
 _dtb:
   .incbin DEVICE_TREE
+
+

@@ -19,27 +19,24 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+module rocket_tb ();
+  reg  clk;
+  reg  mem_ok;
+  reg  reset;
+  wire out;
 
-module tb_rocketchip();
-    reg clk;
-    reg mem_ok;
-    reg reset;
-    wire out;
-    
-    
-    localparam CLK_PERIOD = 10;
-    
-    initial clk = 1'b0;
-    initial mem_ok = 1'b1;
-    initial reset = 1'b0;
-    always # ( CLK_PERIOD/2.0)
-       clk =~clk;
-       
-   design_1_wrapper dut (
-       .clock(clk),
-       .mem_ok(mem_ok),
-       .reset(reset)
-   );
-       
+
+  localparam CLK_PERIOD = 10;
+
+  initial clk = 1'b0;
+  initial mem_ok = 1'b1;
+  initial reset = 1'b0;
+  always #(CLK_PERIOD / 2.0) clk = ~clk;
+
+  rocket_wrapper dut (
+      .clock (clk),
+      .mem_ok(mem_ok),
+      .reset (reset)
+  );
 
 endmodule

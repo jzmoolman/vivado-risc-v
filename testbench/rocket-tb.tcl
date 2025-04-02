@@ -2,7 +2,7 @@
 # If there is no project opened, create a project
 set list_projs [get_projects -quiet]
 if { $list_projs eq "" } {
-   create_project -force tb-${vivado_board_name}-riscv tb-vivado-${vivado_board_name}-riscv -part ${xilinx_part}
+   create_project -force ${vivado_board_name}-riscv-tb vivado-${vivado_board_name}-riscv-tb -part ${xilinx_part}
    # Allow projects with no BOARD_PART set. xilinx_part and /board constraints can suffice.
    if {[info exists vivado_board_part]} {
       set_property BOARD_PART ${vivado_board_part} [current_project]
@@ -31,6 +31,7 @@ set files [list \
 add_files -norecurse -fileset $constraint_fileset $files
 
 set_property top rocketchip-tb [get_filesets sim_1]
+
 
 
 
