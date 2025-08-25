@@ -390,7 +390,7 @@ workspace/$(CONFIG)/system-$(BOARD)-tb.tcl: workspace/$(CONFIG)/rocket.vhdl work
 	echo "set riscv_clock_frequency $(ROCKET_FREQ_MHZ)" >>$@
 	echo "set memory_size $(MEMORY_SIZE)" >>$@
 	echo 'cd [file dirname [file normalize [info script]]]' >>$@
-	echo 'source ../../tcl/vivado_tb.tcl' >>$@
+	echo 'source ../../tcl/vivado-tb.tcl' >>$@
 
 vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl workspace/$(CONFIG)/system-$(BOARD)-tb.tcl
 	$(info DEBUG vivado-tcl)
