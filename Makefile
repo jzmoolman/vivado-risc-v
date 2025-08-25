@@ -112,7 +112,14 @@ debian-riscv64/rootfs.tar.gz:
 .PHONY: linux
 linux: linux-stable/arch/riscv/boot/Image
 
-CROSS_COMPILE_LINUX = /usr/bin/riscv64-linux-gnu-
+
+ifeq ($(UNAME_S),Linux)
+	CROSS_COMPILE_LINUX = /usr/bin/riscv64-linux-gnu-
+endif
+ifeq ($(UNAME_S),Linux)
+	CROSS_COMPILE_LINUX =  /opt/homebrew/bin/riscv64-unknown-elf-gcc
+endif
+
 
 workspace/patch-linux-done: patches/linux.patch patches/fpga-axi-sdc.c patches/fpga-axi-eth.c patches/linux.config
 	if [ -s patches/linux.patch ] ; then cd linux-stable && ( git apply -R --check ../patches/linux.patch 2>/dev/null || git apply ../patches/linux.patch ) ; fi
@@ -192,8 +199,8 @@ opensbi-qemu:
 
 # --- generate HDL ---
 CONFIG_SCALA := $(subst rocket,Rocket,$(CONFIG))
-ifeq ($(UNAME_S),DARWIN)
-+RISCV_TOOLS_PATH ?= /opt/homebrew/bin/
+ifeq ($(UNAME_S),Darwin)
+RISCV_TOOLS_PATH ?= /opt/homebrew/bin/
 endif
 
 # valid ROCKET_FREQ_MHZ values (MHz): 160 125 100 80 62.5 50 40 31.25 25 20
@@ -209,7 +216,7 @@ ifneq ($(findstring Rocket32t,$(CONFIG_SCALA)),)
     CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv32-unknown-elf-
     CROSS_COMPILE_NO_OS_FLAGS = -march=rv32imac -mabi=ilp32 -DFF_FS_EXFAT=0
   endif
-  ifeq ($(UNAME_S),DARWIN)
+  ifeq ($(UNAME_S),Darwin)
     CROSS_COMPILE_NO_OS_TOOLS = $(RISCV_TOOLS_PATH)/riscv32-unknown-elf-
     CROSS_COMPILE_NO_OS_FLAGS = -march=rv32gc -mabi=ilp32 -DFF_FS_EXFAT=0
   endif
@@ -218,7 +225,7 @@ else ifneq ($(findstring Rocket32,$(CONFIG_SCALA)),)
     CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv32-unknown-elf-
     CROSS_COMPILE_NO_OS_FLAGS = -march=rv32imac -mabi=ilp32
   endif
-  ifeq ($(UNAME_S),DARWIN)
+  ifeq ($(UNAME_S),Darwin)
     CROSS_COMPILE_NO_OS_TOOLS = $(RISCV_TOOLS_PATH)/riscv32-unknown-elf-
     CROSS_COMPILE_NO_OS_FLAGS = -march=rv32gc -mabi=ilp32
   endif
@@ -227,9 +234,9 @@ else
     CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv64-unknown-elf-
     CROSS_COMPILE_NO_OS_FLAGS = -march=rv64imac -mabi=lp64
   endif
-  ifeq ($(UNAME_S),DARWIN)
+  ifeq ($(UNAME_S),Darwin)
     CROSS_COMPILE_NO_OS_TOOLS = $(RISCV_TOOLS_PATH)/riscv64-unknown-elf-
-    CROSS_COMPILE_NO_OS_FLAGS = -march=rv64gc -mabi=ilp64
+    CROSS_COMPILE_NO_OS_FLAGS = -march=rv64gc -mabi=lp64
   endif
 endif
 
@@ -289,6 +296,7 @@ workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir: workspace/$(CONFIG)/system
 	if [ ! -z "$(ETHER_MAC)" ] ; then sed -i "s#local-mac-address = \[.*\]#local-mac-address = [$(ETHER_MAC)]#g" bootrom/system.dts ; fi
 	if [ ! -z "$(ETHER_PHY)" ] ; then sed -i "s#phy-mode = \".*\"#phy-mode = \"$(ETHER_PHY)\"#g" bootrom/system.dts ; fi
 	sed -i '' "/interrupts-extended = <&.* 65535>;/d" bootrom/system.dts
+	echo "TEST"
 	make -C bootrom CROSS_COMPILE="$(CROSS_COMPILE_NO_OS_TOOLS)" CFLAGS="$(CROSS_COMPILE_NO_OS_FLAGS)" BOARD=$(BOARD) clean bootrom.img
 	mv bootrom/system.dts workspace/$(CONFIG)/system-$(BOARD).dts
 	mv bootrom/bootrom.img workspace/bootrom.img
