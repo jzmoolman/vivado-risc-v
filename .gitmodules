@@ -34,3 +34,4 @@
 [submodule "verilog-axi"]
 	path = verilog-axi
 	url = git@github.com:jzmoolman/verilog-axi.git
+	branch = feature/init_bram
