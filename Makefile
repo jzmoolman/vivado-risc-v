@@ -330,6 +330,7 @@ workspace/$(CONFIG)/system-$(BOARD).v: workspace/$(CONFIG)/system-$(BOARD)/Rocke
 	cp workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.v workspace/$(CONFIG)/system-$(BOARD).v
 
 # Generate Rocket SoC wrapper for Vivado
+
 workspace/$(CONFIG)/rocket.vhdl: workspace/$(CONFIG)/system-$(BOARD).v
 	$(info DEBUG rocket.vhdl)
 	mkdir -p vhdl-wrapper/bin
@@ -341,6 +342,12 @@ workspace/$(CONFIG)/rocket.vhdl: workspace/$(CONFIG)/system-$(BOARD).v
 	  vhdl-wrapper/src:vhdl-wrapper/bin:vhdl-wrapper/antlr-4.8-complete.jar \
 	  net.largest.riscv.vhdl.Main -m $(CONFIG_SCALA) \
 	  workspace/$(CONFIG)/system-$(BOARD).v >$@
+
+# Generate Wrapper for TB
+workspace/$(CONFIG)/soc_wrapper_tb.v: tb/soc_wrapper_tb.v
+#sed "s#reg = <0x0 0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE64)>#g" bootrom/system.dts
+	sed 's#<CONFIG>#$(CONFIG_SCALA)#g' $<  > $@
+
 
 # --- utility make targets to run SBT command line ---
 
@@ -378,9 +385,10 @@ workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspa
 	echo "set riscv_clock_frequency $(ROCKET_FREQ_MHZ)" >>$@
 	echo "set memory_size $(MEMORY_SIZE)" >>$@
 	echo 'cd [file dirname [file normalize [info script]]]' >>$@
+	echo 'set_param board.repoPaths [list "/home/jzmoolman/src/_-github/digilent/vivado-boards/new/board_files"]' >> $@
 	echo 'source ../../vivado.tcl' >>$@
 
-workspace/$(CONFIG)/system-$(BOARD)-tb.tcl: workspace/$(CONFIG)/rocket.vhdl workspace/$(CONFIG)/system-$(BOARD).v
+workspace/$(CONFIG)/system-$(BOARD)-tb.tcl: workspace/$(CONFIG)/rocket.vhdl workspace/$(CONFIG)/system-$(BOARD).v workspace/$(CONFIG)/soc_wrapper_tb.v
 	$(info DEBUG system_BOARD-tb.tcl)
 	echo "set vivado_board_name $(BOARD)" >$@
 	if [ "$(BOARD_PART)" != "" -a "$(BOARD_PART)" != "NONE" ] ; then echo "set vivado_board_part $(BOARD_PART)" >>$@ ; fi
@@ -390,6 +398,7 @@ workspace/$(CONFIG)/system-$(BOARD)-tb.tcl: workspace/$(CONFIG)/rocket.vhdl work
 	echo "set riscv_clock_frequency $(ROCKET_FREQ_MHZ)" >>$@
 	echo "set memory_size $(MEMORY_SIZE)" >>$@
 	echo 'cd [file dirname [file normalize [info script]]]' >>$@
+	echo 'set_param board.repoPaths [list "/home/jzmoolman/src/_-github/digilent/vivado-boards/new/board_files"]' >> $@
 	echo 'source ../../tcl/vivado-tb.tcl' >>$@
 
 vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl workspace/$(CONFIG)/system-$(BOARD)-tb.tcl
