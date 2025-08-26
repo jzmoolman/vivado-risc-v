@@ -1,3 +1,6 @@
+# --- Detect OS ---
+UNAME_S := $(shell uname -s)
+
 # --- configuration ---
 
 ifneq (,$(wildcard workspace/config))
@@ -28,6 +31,7 @@ docker-shell:
 # --- packages and repos ---
 
 apt-install:
+ifeq ($(UNAME_S),Linux)
 	sudo apt update
 	sudo apt upgrade
 	sudo apt install default-jdk device-tree-compiler curl gawk \
@@ -37,12 +41,21 @@ ifeq ($(shell test -r /etc/os-release && . /etc/os-release && echo $$VERSION_COD
 else
 	sudo apt install python
 endif
+endif
+ifeq ($(UNAME_S),Darwin)
+	brew install riscv-tools
+endif
+
 
 apt-install-qemu:
 	sudo apt install qemu-system-misc opensbi u-boot-qemu qemu-utils
 
 # skip submodules which are not needed and take long time to update
 override SKIP_SUBMODULES += torture software/gemmini-rocc-tests software/onnxruntime-riscv
+
+ifeq ($(UNAME_S),Darwin)
+override SKIP_SUBMODULES += linux-stable
+endif
 
 update:
 	git pull --no-recurse-submodules
@@ -99,7 +112,14 @@ debian-riscv64/rootfs.tar.gz:
 .PHONY: linux
 linux: linux-stable/arch/riscv/boot/Image
 
-CROSS_COMPILE_LINUX = /usr/bin/riscv64-linux-gnu-
+
+ifeq ($(UNAME_S),Linux)
+	CROSS_COMPILE_LINUX = /usr/bin/riscv64-linux-gnu-
+endif
+ifeq ($(UNAME_S),Linux)
+	CROSS_COMPILE_LINUX =  /opt/homebrew/bin/riscv64-unknown-elf-gcc
+endif
+
 
 workspace/patch-linux-done: patches/linux.patch patches/fpga-axi-sdc.c patches/fpga-axi-eth.c patches/linux.config
 	if [ -s patches/linux.patch ] ; then cd linux-stable && ( git apply -R --check ../patches/linux.patch 2>/dev/null || git apply ../patches/linux.patch ) ; fi
@@ -178,8 +198,10 @@ opensbi-qemu:
 	cd qemu && make -C opensbi clean && make -C opensbi PLATFORM=generic CROSS_COMPILE=$(CROSS_COMPILE_LINUX) FW_PAYLOAD_PATH=../u-boot/u-boot.bin
 
 # --- generate HDL ---
-
 CONFIG_SCALA := $(subst rocket,Rocket,$(CONFIG))
+ifeq ($(UNAME_S),Darwin)
+RISCV_TOOLS_PATH ?= /opt/homebrew/bin/
+endif
 
 # valid ROCKET_FREQ_MHZ values (MHz): 160 125 100 80 62.5 50 40 31.25 25 20
 ROCKET_FREQ_MHZ ?= $(shell awk '$$3 != "" && "$(BOARD)" ~ $$1 && "$(CONFIG_SCALA)" ~ ("^" $$2 "$$") {print $$3; exit}' board/rocket-freq)
@@ -190,14 +212,32 @@ ROCKET_TIMEBASE_FREQ := $(shell echo - | awk '{printf("%.0f\n", $(ROCKET_FREQ_MH
 MEMORY_SIZE ?= 0x40000000
 
 ifneq ($(findstring Rocket32t,$(CONFIG_SCALA)),)
-  CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv32-unknown-elf-
-  CROSS_COMPILE_NO_OS_FLAGS = -march=rv32imac -mabi=ilp32 -DFF_FS_EXFAT=0
+  ifeq ($(UNAME_S),Linux)
+    CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv32-unknown-elf-
+    CROSS_COMPILE_NO_OS_FLAGS = -march=rv32imac -mabi=ilp32 -DFF_FS_EXFAT=0
+  endif
+  ifeq ($(UNAME_S),Darwin)
+    CROSS_COMPILE_NO_OS_TOOLS = $(RISCV_TOOLS_PATH)/riscv32-unknown-elf-
+    CROSS_COMPILE_NO_OS_FLAGS = -march=rv32gc -mabi=ilp32 -DFF_FS_EXFAT=0
+  endif
 else ifneq ($(findstring Rocket32,$(CONFIG_SCALA)),)
-  CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv32-unknown-elf-
-  CROSS_COMPILE_NO_OS_FLAGS = -march=rv32imac -mabi=ilp32
+  ifeq ($(UNAME_S),Linux)
+    CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv32-unknown-elf-
+    CROSS_COMPILE_NO_OS_FLAGS = -march=rv32imac -mabi=ilp32
+  endif
+  ifeq ($(UNAME_S),Darwin)
+    CROSS_COMPILE_NO_OS_TOOLS = $(RISCV_TOOLS_PATH)/riscv32-unknown-elf-
+    CROSS_COMPILE_NO_OS_FLAGS = -march=rv32gc -mabi=ilp32
+  endif
 else
-  CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv64-unknown-elf-
-  CROSS_COMPILE_NO_OS_FLAGS = -march=rv64imac -mabi=lp64
+  ifeq ($(UNAME_S),Linux)
+    CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv64-unknown-elf-
+    CROSS_COMPILE_NO_OS_FLAGS = -march=rv64imac -mabi=lp64
+  endif
+  ifeq ($(UNAME_S),Darwin)
+    CROSS_COMPILE_NO_OS_TOOLS = $(RISCV_TOOLS_PATH)/riscv64-unknown-elf-
+    CROSS_COMPILE_NO_OS_FLAGS = -march=rv64gc -mabi=lp64
+  endif
 endif
 
 ifeq ($(shell echo $$(($(MEMORY_SIZE) <= 0x80000000))),1)
@@ -244,16 +284,35 @@ workspace/$(CONFIG)/system.dts: $(CHISEL_SRC) rocket-chip/bootrom/bootrom.img wo
 
 # Generate board specific device tree, boot ROM and FIRRTL
 workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir: workspace/$(CONFIG)/system.dts $(wildcard bootrom/*) workspace/gcc/riscv
+	$(info RULE: workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir)
 	rm -rf workspace/$(CONFIG)/system-$(BOARD)
 	mkdir -p workspace/$(CONFIG)/system-$(BOARD)
-	cat workspace/$(CONFIG)/system.dts board/$(BOARD)/bootrom.dts >bootrom/system.dts
+	cat workspace/$(CONFIG)/system.dts board/$(BOARD)/bootrom.dts > bootrom/system.dts
+	
+ifeq ($(UNAME_S),Linux)
+	sed -i "s#reg = <0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE32)>#g" bootrom/system.dts
 	sed -i "s#reg = <0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE32)>#g" bootrom/system.dts
 	sed -i "s#reg = <0x0 0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE64)>#g" bootrom/system.dts
 	sed -i "s#clock-frequency = <[0-9]*>#clock-frequency = <$(ROCKET_CLOCK_FREQ)>#g" bootrom/system.dts
 	sed -i "s#timebase-frequency = <[0-9]*>#timebase-frequency = <$(ROCKET_TIMEBASE_FREQ)>#g" bootrom/system.dts
+endif
+
+ifeq ($(UNAME_S),Darwin)
+	sed -i '' "s#reg = <0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE32)>#g" bootrom/system.dts
+	sed -i '' "s#reg = <0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE32)>#g" bootrom/system.dts
+	sed -i '' "s#reg = <0x0 0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE64)>#g" bootrom/system.dts
+	sed -i '' "s#clock-frequency = <[0-9]*>#clock-frequency = <$(ROCKET_CLOCK_FREQ)>#g" bootrom/system.dts
+	sed -i '' "s#timebase-frequency = <[0-9]*>#timebase-frequency = <$(ROCKET_TIMEBASE_FREQ)>#g" bootrom/system.dts
+endif
 	if [ ! -z "$(ETHER_MAC)" ] ; then sed -i "s#local-mac-address = \[.*\]#local-mac-address = [$(ETHER_MAC)]#g" bootrom/system.dts ; fi
 	if [ ! -z "$(ETHER_PHY)" ] ; then sed -i "s#phy-mode = \".*\"#phy-mode = \"$(ETHER_PHY)\"#g" bootrom/system.dts ; fi
+
+ifeq ($(UNAME_S),Linux)
 	sed -i "/interrupts-extended = <&.* 65535>;/d" bootrom/system.dts
+endif
+ifeq ($(UNAME_S),Darwin)
+	sed -i '' "/interrupts-extended = <&.* 65535>;/d" bootrom/system.dts
+endif
 	make -C bootrom CROSS_COMPILE="$(CROSS_COMPILE_NO_OS_TOOLS)" CFLAGS="$(CROSS_COMPILE_NO_OS_FLAGS)" BOARD=$(BOARD) clean bootrom.img
 	mv bootrom/system.dts workspace/$(CONFIG)/system-$(BOARD).dts
 	mv bootrom/bootrom.img workspace/bootrom.img
@@ -263,6 +322,7 @@ workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir: workspace/$(CONFIG)/system
 
 # Generate Rocket SoC HDL
 workspace/$(CONFIG)/system-$(BOARD).v: workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.fir
+	$(info workspace/$(CONFIG)/system-$(BOARD).v)
 	$(FIRRTL) -i $< -o RocketSystem.v --compiler verilog \
 	  --annotation-file workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.anno.json \
 	  --custom-transforms firrtl.passes.InlineInstances \
@@ -270,7 +330,9 @@ workspace/$(CONFIG)/system-$(BOARD).v: workspace/$(CONFIG)/system-$(BOARD)/Rocke
 	cp workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.v workspace/$(CONFIG)/system-$(BOARD).v
 
 # Generate Rocket SoC wrapper for Vivado
+
 workspace/$(CONFIG)/rocket.vhdl: workspace/$(CONFIG)/system-$(BOARD).v
+	$(info DEBUG rocket.vhdl)
 	mkdir -p vhdl-wrapper/bin
 	javac -g -nowarn \
 	  -sourcepath vhdl-wrapper/src -d vhdl-wrapper/bin \
@@ -280,6 +342,12 @@ workspace/$(CONFIG)/rocket.vhdl: workspace/$(CONFIG)/system-$(BOARD).v
 	  vhdl-wrapper/src:vhdl-wrapper/bin:vhdl-wrapper/antlr-4.8-complete.jar \
 	  net.largest.riscv.vhdl.Main -m $(CONFIG_SCALA) \
 	  workspace/$(CONFIG)/system-$(BOARD).v >$@
+
+# Generate Wrapper for TB
+workspace/$(CONFIG)/soc_wrapper_tb.v: tb/soc_wrapper_tb.v
+#sed "s#reg = <0x0 0x80000000 *0x.*>#reg = <$(MEMORY_ADDR_RANGE64)>#g" bootrom/system.dts
+	sed 's#<CONFIG>#$(CONFIG_SCALA)#g' $<  > $@
+
 
 # --- utility make targets to run SBT command line ---
 
@@ -308,6 +376,7 @@ prm_file    = workspace/$(CONFIG)/$(proj_name).prm
 vivado      = env XILINX_LOCAL_USER_DATA=no vivado -mode batch -nojournal -nolog -notrace -quiet
 
 workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspace/$(CONFIG)/system-$(BOARD).v
+	$(info DEBUG system_BOARD.tcl)
 	echo "set vivado_board_name $(BOARD)" >$@
 	if [ "$(BOARD_PART)" != "" -a "$(BOARD_PART)" != "NONE" ] ; then echo "set vivado_board_part $(BOARD_PART)" >>$@ ; fi
 	if [ "$(BOARD_CONFIG)" != "" ] ; then echo "set board_config $(BOARD_CONFIG)" >>$@ ; fi
@@ -316,9 +385,24 @@ workspace/$(CONFIG)/system-$(BOARD).tcl: workspace/$(CONFIG)/rocket.vhdl workspa
 	echo "set riscv_clock_frequency $(ROCKET_FREQ_MHZ)" >>$@
 	echo "set memory_size $(MEMORY_SIZE)" >>$@
 	echo 'cd [file dirname [file normalize [info script]]]' >>$@
+	echo 'set_param board.repoPaths [list "/home/jzmoolman/src/_-github/digilent/vivado-boards/new/board_files"]' >> $@
 	echo 'source ../../vivado.tcl' >>$@
 
-vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl
+workspace/$(CONFIG)/system-$(BOARD)-tb.tcl: workspace/$(CONFIG)/rocket.vhdl workspace/$(CONFIG)/system-$(BOARD).v workspace/$(CONFIG)/soc_wrapper_tb.v
+	$(info DEBUG system_BOARD-tb.tcl)
+	echo "set vivado_board_name $(BOARD)" >$@
+	if [ "$(BOARD_PART)" != "" -a "$(BOARD_PART)" != "NONE" ] ; then echo "set vivado_board_part $(BOARD_PART)" >>$@ ; fi
+	if [ "$(BOARD_CONFIG)" != "" ] ; then echo "set board_config $(BOARD_CONFIG)" >>$@ ; fi
+	echo "set xilinx_part $(XILINX_PART)" >>$@
+	echo "set rocket_module_name $(CONFIG_SCALA)" >>$@
+	echo "set riscv_clock_frequency $(ROCKET_FREQ_MHZ)" >>$@
+	echo "set memory_size $(MEMORY_SIZE)" >>$@
+	echo 'cd [file dirname [file normalize [info script]]]' >>$@
+	echo 'set_param board.repoPaths [list "/home/jzmoolman/src/_-github/digilent/vivado-boards/new/board_files"]' >> $@
+	echo 'source ../../tcl/vivado-tb.tcl' >>$@
+
+vivado-tcl: workspace/$(CONFIG)/system-$(BOARD).tcl workspace/$(CONFIG)/system-$(BOARD)-tb.tcl
+	$(info DEBUG vivado-tcl)
 
 $(proj_time): workspace/$(CONFIG)/system-$(BOARD).tcl
 	if [ ! -e $(proj_path) ] ; then $(vivado) -source workspace/$(CONFIG)/system-$(BOARD).tcl || ( rm -rf $(proj_path) ; exit 1 ) ; fi
