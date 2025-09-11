@@ -37,6 +37,17 @@ set files [list \
  [file normalize "../../vhdl-wrapper/src/net/largest/riscv/vhdl/bscan2jtag.vhdl"] \
  [file normalize "../../board/mem-reset-control.v"] \
  [file normalize "../../board/fan-control.v"] \
+ [file normalize "../../../secure-memory/include/build_config_pkg.sv"] \
+ [file normalize "../../../secure-memory/include/config_pkg.sv"] \
+ [file normalize "../../../secure-memory/include/riscv_pkg.sv"] \
+ [file normalize "../../../secure-memory/include/tilelink_pkg.sv"] \
+ [file normalize "../../../secure-memory/rtl/fifo_v3.sv"] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_wrapper.sv" ] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_buffer.sv" ] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/tlbuffer_a.sv"] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/tlbuffer_d.sv"] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/tldispatcher_a.sv" ] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/tldispatcher_d.sv" ] \
 ]
 add_files -norecurse -fileset $source_fileset $files
 
