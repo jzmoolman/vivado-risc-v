@@ -582,6 +582,10 @@ int main(void) {
     for (;;) {
         kputs("");
         kprintf("RISC-V %d, Boot ROM V3.9\n", __riscv_xlen);
+
+        uintptr_t entry_addr = 0x080000000;
+        asm volatile ("jr %0" :: "r" (entry_addr));
+        // Skip the reset
         drv_status = STA_NOINIT;
         errno = f_mount(&fatfs, "", 1);
         if (errno) {
