@@ -1,0 +1,223 @@
+// ***************
+// Custom bootrom
+// ***************
+
+{ 
+  
+  signal: [
+  { name: "clk",          wave: "p............" },
+  { name: "in_a_ready",   wave: "1............" },
+  { name: "in_a_valid",   wave: "01..........." },
+  { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+  { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","0","0","0","0","0","0","0"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'Read request ^3115 @080000040',  
+  ] //,tock:1065
+}
+{ 
+  
+  signal: [
+  { name: "clk",          wave: "p............" },
+  { name: "in_a_ready",   wave: "1............" },
+  { name: "in_a_valid",   wave: "01..........." },
+  { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+  { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","0","0","0","0","0","0","0"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'Read request ^3115 @080000040',  
+  ] //,tock:1065
+}
+}
+{ 
+  
+  signal: [
+  { name: "clk",          wave: "p............" },
+  { name: "in_a_ready",   wave: "1............" },
+  { name: "in_a_valid",   wave: "01..........." },
+  { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+  { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","0","0","0","0","0","0","0"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'Read request ^3115 @080000040',  
+  ] //,tock:1065
+}
+}
+}
+
+// ***********
+// default tb
+// ***********
+
+{ 
+signal: [
+        { name: "clk",          wave: "p............" },
+        { name: "in_a_ready",   wave: "1............" },
+        { name: "in_a_valid",   wave: "01..........." },
+        { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+        { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","1","2","3","4","5","6","7","7"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'First read request @1075',  
+  ] //,tock:1065
+}
+
+###
+
+{ 
+  
+  signal: [
+  { name: "clk",          wave: "p............" },
+  { name: "in_a_ready",   wave: "1............" },
+  { name: "in_a_valid",   wave: "01..........." },
+  { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+  { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","0","0","0","0","0","0","0"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'Read request ^1535 @080001fc0',  
+  ] //,tock:1065
+}
+
+
+
+}
+
+
+{ 
+  
+  signal: [
+  { name: "clk",          wave: "p............" },
+  { name: "in_a_ready",   wave: "1............" },
+  { name: "in_a_valid",   wave: "01..........." },
+  { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+  { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","0","0","0","0","0","0","0"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'Read request ^1825 @ 080001f80 ',  
+  ] //,tock:1065
+}
+
+
+}
+
+{ 
+  
+  signal: [
+  { name: "clk",          wave: "p............" },
+  { name: "in_a_ready",   wave: "1............" },
+  { name: "in_a_valid",   wave: "01..........." },
+  { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+  { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","0","0","0","0","0","0","0"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'Read request ^3115 @080000040',  
+  ] //,tock:1065
+}
+}
+
+
+# this is repeat until ^21875 @ 080001f00
+
+{ 
+  
+  signal: [
+  { name: "clk",          wave: "p............" },
+  { name: "in_a_ready",   wave: "1............" },
+  { name: "in_a_valid",   wave: "01..........." },
+  { name: "in_a_opcode",  wave: "030..........", data: ["4"]},
+  { name: "in_a_size",    wave: "030..........", data: "6" },
+  { name: "in_a_source",  wave: "030..........", data: "3f" },
+  { name: "in_a_address", wave: "030..........", data: "@" },
+  {},
+  { name: "in_d_ready",   wave: "1............" },
+  { name: "in_d_valid",   wave: "0...1.......0" },
+  { name: "in_d_opcode",  wave: "0...3.......0", data: ["1","1","2","3","4","5","6","7"]},
+  { name: "in_d_size",    wave: "x...3.......x", data: "6" },
+  { name: "in_d_source",  wave: "x...3.......x", data: "3f" },
+  { name: "in_d_denied",  wave: "0...0.......0", },
+  { name: "in_d_data",    wave: "0...333333333", data: ["0","0","0","0","0","0","0","0"]},
+  { name: "in_d_corrupt", wave: "0...0.......0" },
+  ],   
+  head: {text:
+  ['tspan', 'Read request ^3975 @080000080',  
+  ] //,tock:1065
+}
+}
+

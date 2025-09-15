@@ -35,3 +35,4 @@
 [submodule "rocket-chip"]
 	path = rocket-chip
 	url = git@github.com:jzmoolman/rocket-chip.git
+	branch = feature/memorycontrollerwrapper
