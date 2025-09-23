@@ -44,5 +44,17 @@ add_files -norecurse -fileset $constraint_fileset $files
 set_property top vivado_tb [get_filesets sim_1]
 
 
+# Check if a specific file is part of the 'sources_1' fileset
+
+set memfile "../../tb/init.mem"
+if {[file exists $memfile]} {
+   puts "File exists, adding to project..."
+   add_files $memfile
+   set_property verilog_define [list "MEMFILE_INCLUDED=1"] [get_filesets sim_1]
+}
+
+
+
+
 
 
