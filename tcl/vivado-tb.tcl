@@ -24,7 +24,13 @@ set files [list \
  [file normalize "../../../secure-memory/include/riscv_pkg.sv"] \
  [file normalize "../../../secure-memory/include/tilelink_pkg.sv"] \
  [file normalize "../../../secure-memory/rtl/fifo_v3.sv"] \
+ [file normalize "../../../secure-memory/rtl/csr_regfile.sv"] \
+ [file normalize "../../../secure-memory/epmp/rtl/epmp.sv"] \
+ [file normalize "../../../secure-memory/epmp/rtl/epmp_entry.sv"] \
+ [file normalize "../../../secure-memory/epmp/rtl/lzc.sv"] \
+ [file normalize "../../../secure-memory/epmp/rtl/cf_math_pkg .sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_wrapper.sv"] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller.sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_buffer.sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/tlbuffer_a.sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/tlbuffer_d.sv"] \
