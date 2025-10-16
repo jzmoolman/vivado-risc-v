@@ -16,7 +16,12 @@ class RocketSystem(implicit p: Parameters) extends RocketSubsystem
     with CanHaveMasterAXI4MMIOPort
     with CanHaveSlaveAXI4Port
 {
+  println("==> RocketSystem")
   val bootROM  = p(BootROMLocated(location)).map { BootROM.attach(_, this, CBUS) }
+  val smc  = p(SecureMemoryControllerLocated(location)).map { 
+    println(s"==> Before attached")
+    SecureMemoryController.attach(_, this, CBUS)
+  }
   override lazy val module = new RocketSystemModuleImp(this)
 }
 
@@ -127,6 +132,7 @@ class RocketWideBusConfig extends Config(
 class Rocket64b1 extends Config(
   new WithNBreakpoints(8) ++
   new WithNBigCores(1)    ++
+  new WithSMC ++
   new RocketBaseConfig)
 
 class Rocket64b2 extends Config(

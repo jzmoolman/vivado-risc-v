@@ -5,43 +5,57 @@
 .section .text.start, "ax", @progbits
 .globl _start
 _start:
-  csrr a0, mhartid
-  la a1, _dtb
-  la s0, _ram
-  jr s0
-_start_bootrom:
-  # a0 - hart ID
-  # a1 - Device Tree
-  # s0 - start of RAM and trap vector
-  li s2, 0
-  sw s2, 0(s0) # clear trap vector
-  li sp, BOOTROM_MEM_END
-  call main
-  j _hang
+    wfi
+    j _start
 
 .section .text.hang, "ax", @progbits
 .globl _hang
 _hang:
   csrr a0, mhartid
-  la a1, _dtb
-  la s0, _ram
   beqz a0, _start_bootrom
-_hartx_loop:
-  # write mtvec
-  csrw mtvec, s0
-  # enable software interrupt
-  csrwi mie, MIP_MSIP
   wfi
-  # only start if interrupt request is set
-  csrr t0, mip
-  andi t0, t0, MIP_MSIP
-  beqz t0, _hartx_loop
-  # jump to code in RAM
-  ecall
-  j _hartx_loop
+  j _hang
 
-.section .rodata.dtb, "a", @progbits
-.globl _dtb
-.align 5, 0
-_dtb:
-  .incbin DEVICE_TREE
+.section .text.start_bootrom
+_start_bootrom:
+
+    
+
+    li t1, 0x2020000
+    // Set pmpcfg0 and cfg2
+    li a0, 0x00003F1F
+    // Store pmpcfg{0..3}
+    sd a0, 0x10(t1)
+    // pmpaddr0 value 0x80001000
+    li a0, 0x200001FF
+    sd a0, 0x18(t1)
+    // pmpaddr0 value 0x80002000
+    li a0, 0x200005FF
+    sd a0, 0x08(t1)
+
+    li t1, 0x2010000
+    // Set pmpcfg0 and cfg2
+    li a0, 0x00003F1F
+    sd a0, 0x0(t1)
+    // pmpaddr0 value 0x80001000
+    li a0, 0x200001FF
+    //#sd a0, 0x40(s1)
+    sd a0, 0x80(t1) // Chance this from 0x00
+    // pmpaddr0 value 0x80002000
+    li a0, 0x200005FF
+    sd a0, 0x88(t1) // Change this from 0x000
+
+    li t0, 0x80001000
+    sd a0, 0(t0)
+    li t0, 0x80000000
+    sd a0, 0(t0)
+    li t0, 0x80002000
+    sd a0, 0(t0)
+    li t0, 0x80003000
+    sd a0, 0(t0)
+    li a0, 0x80004000
+    sd a0, 0(t0)
+
+
+    nop
+    wfi

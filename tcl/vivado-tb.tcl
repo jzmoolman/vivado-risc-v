@@ -27,8 +27,8 @@ set files [list \
  [file normalize "../../../secure-memory/rtl/csr_regfile.sv"] \
  [file normalize "../../../secure-memory/epmp/rtl/epmp.sv"] \
  [file normalize "../../../secure-memory/epmp/rtl/epmp_entry.sv"] \
- [file normalize "../../../secure-memory/epmp/rtl/lzc.sv"] \
- [file normalize "../../../secure-memory/epmp/rtl/cf_math_pkg .sv"] \
+ [file normalize "../../../secure-memory/rtl/lzc.sv"] \
+ [file normalize "../../../secure-memory/rtl/cf_math_pkg.sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_wrapper.sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller.sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_buffer.sv"] \
@@ -49,6 +49,11 @@ add_files -norecurse -fileset $constraint_fileset $files
 
 set_property top vivado_tb [get_filesets sim_1]
 
-
+set memfile "../../tb/init.mem"
+if {[file exists $memfile]} {
+   puts "File exists, adding to project..."
+   add_files $memfile
+   set_property verilog_define [list "MEMFILE_INCLUDED=1"] [get_filesets sim_1]
+}
 
 
