@@ -22,14 +22,22 @@ set files [list \
  [file normalize "../../../secure-memory/include/config_pkg.sv"] \
  [file normalize "../../../secure-memory/include/build_config_pkg.sv"] \
  [file normalize "../../../secure-memory/include/riscv_pkg.sv"] \
- [file normalize "../../../secure-memory/include/tilelink_pkg.sv"] \
+ [file normalize "../../../secure-memory/tilelink/include/tilelink_pkg.sv"] \
  [file normalize "../../../secure-memory/rtl/fifo_v3.sv"] \
+ [file normalize "../../../secure-memory/rtl/csr_regfile.sv"] \
+ [file normalize "../../../secure-memory/epmp/rtl/epmp.sv"] \
+ [file normalize "../../../secure-memory/epmp/rtl/epmp_entry.sv"] \
+ [file normalize "../../../secure-memory/rtl/lzc.sv"] \
+ [file normalize "../../../secure-memory/rtl/cf_math_pkg.sv"] \
+ [file normalize "../../../secure-memory/aes/src/rtl/aes_encipher_block.v"] \
+ [file normalize "../../../secure-memory/aes/src/rtl/aes_sbox.v"] \
+ [file normalize "../../../secure-memory/cipherblock/rtl/cipherblock.sv"] \
+ [file normalize "../../../secure-memory/cipherblock/rtl/cipherblock_nx128.sv"] \
  [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_wrapper.sv"] \
- [file normalize "../../../secure-memory/memory-controller/rtl/memory_controller_buffer.sv"] \
- [file normalize "../../../secure-memory/memory-controller/rtl/tlbuffer_a.sv"] \
- [file normalize "../../../secure-memory/memory-controller/rtl/tlbuffer_d.sv"] \
- [file normalize "../../../secure-memory/memory-controller/rtl/tldispatcher_a.sv"] \
- [file normalize "../../../secure-memory/memory-controller/rtl/tldispatcher_d.sv"] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/secure_memory_controller.sv" ] \
+ [file normalize "../../../secure-memory/memory-controller/rtl/memory_encryption_unit.sv" ] \
+ [file normalize "../../../secure-memory/tilelink/rtl/ztl_assembler.sv"] \
+ [file normalize "../../../secure-memory/tilelink/rtl/ztl_fragmenter.sv"] \
 ]
 
 add_files -norecurse -fileset $source_fileset $files
@@ -43,18 +51,11 @@ add_files -norecurse -fileset $constraint_fileset $files
 
 set_property top vivado_tb [get_filesets sim_1]
 
-
-# Check if a specific file is part of the 'sources_1' fileset
-
 set memfile "../../tb/init.mem"
 if {[file exists $memfile]} {
    puts "File exists, adding to project..."
    add_files $memfile
    set_property verilog_define [list "MEMFILE_INCLUDED=1"] [get_filesets sim_1]
 }
-
-
-
-
 
 

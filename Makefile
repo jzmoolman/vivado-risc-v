@@ -328,6 +328,7 @@ workspace/$(CONFIG)/system-$(BOARD).v: workspace/$(CONFIG)/system-$(BOARD)/Rocke
 	  --custom-transforms firrtl.passes.InlineInstances \
 	  --target:fpga
 	cp workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.v workspace/$(CONFIG)/system-$(BOARD).v
+	sed -i.bak '/module\ MemoryControllerWrapper/,/endmodule/d' workspace/$(CONFIG)/system-$(BOARD).v 
 
 # Generate Rocket SoC wrapper for Vivado
 
