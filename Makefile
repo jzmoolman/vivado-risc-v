@@ -233,8 +233,6 @@ else
   ifeq ($(UNAME_S),Linux)
     CROSS_COMPILE_NO_OS_TOOLS = $(realpath workspace/gcc/riscv/bin)/riscv64-unknown-elf-
     CROSS_COMPILE_NO_OS_FLAGS = -march=rv64imac -mabi=lp64
-#     CROSS_COMPILE_NO_OS_TOOLS = $(realpath $(HOME)/riscv/bin)/riscv64-unknown-elf-
-#     CROSS_COMPILE_NO_OS_FLAGS = -march=rv64g_ziccsr_zicbom -mabi=lp64
   endif
   ifeq ($(UNAME_S),Darwin)
     CROSS_COMPILE_NO_OS_TOOLS = $(RISCV_TOOLS_PATH)/riscv64-unknown-elf-
@@ -330,6 +328,7 @@ workspace/$(CONFIG)/system-$(BOARD).v: workspace/$(CONFIG)/system-$(BOARD)/Rocke
 	  --custom-transforms firrtl.passes.InlineInstances \
 	  --target:fpga
 	cp workspace/$(CONFIG)/system-$(BOARD)/RocketSystem.v workspace/$(CONFIG)/system-$(BOARD).v
+	sed -i.bak '/module\ MemoryControllerWrapper/,/endmodule/d' workspace/$(CONFIG)/system-$(BOARD).v 
 
 # Generate Rocket SoC wrapper for Vivado
 

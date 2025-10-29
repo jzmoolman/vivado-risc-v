@@ -45,16 +45,16 @@ _start_bootrom:
     li a0, 0x200005FF
     sd a0, 0x88(t1) // Change this from 0x000
 
-    li t0, 0x80001000
-    sd a0, 0(t0)
     li t0, 0x80000000
-    sd a0, 0(t0)
+    sd a0, 0(t0)      // Write-allocate will force a read
     li t0, 0x80002000
+    sd a0, 0(t0)
+    li t0, 0x80001000
     sd a0, 0(t0)
     li t0, 0x80003000
     sd a0, 0(t0)
-    li a0, 0x80004000
-    sd a0, 0(t0)
+    li t0, 0x80004000
+
 
 
     nop
